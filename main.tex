@@ -1,0 +1,280 @@
+% A LaTeX (non-official) template for ISAE projects reports
+% Copyright (C) 2014 Damien Roque
+% Version: 0.2
+% Author: Damien Roque <damien.roque_AT_isae.fr>
+
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[frenchb]{babel} % If you write in French
+%\usepackage[english]{babel} % If you write in English
+\usepackage{a4wide}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{subfig}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\pgfplotsset{plot coordinates/math parser=false}
+\newlength\figureheight
+\newlength\figurewidth
+\pgfkeys{/pgf/number format/.cd,
+set decimal separator={,\!},
+1000 sep={\,},
+}
+\usepackage{ifthen}
+\usepackage{ifpdf}
+\ifpdf
+\usepackage[pdftex]{hyperref}
+\else
+\usepackage{hyperref}
+\fi
+\usepackage{color}
+\hypersetup{%
+colorlinks=true,
+linkcolor=black,
+citecolor=black,
+urlcolor=black}
+
+\renewcommand{\baselinestretch}{1.05}
+\setlength{\headheight}{15pt}
+
+\let\headruleORIG\headrule
+\usepackage{colortbl}
+\arrayrulecolor{black}
+
+\makeatletter
+\def\@textbottom{\vskip \z@ \@plus 1pt}
+\let\@texttop\relax
+\makeatother
+
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else%
+  \hbox{}%
+  \thispagestyle{empty}%
+  \newpage%
+  \if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+
+\usepackage{amsthm}
+\usepackage{amssymb,amsmath,bbm}
+\usepackage{array}
+\usepackage{bm}
+\usepackage{multirow}
+\usepackage[footnote]{acronym}
+
+\newcommand*{\SET}[1]  {\ensuremath{\mathbf{#1}}}
+\newcommand*{\VEC}[1]  {\ensuremath{\boldsymbol{#1}}}
+\newcommand*{\FAM}[1]  {\ensuremath{\boldsymbol{#1}}}
+\newcommand*{\MAT}[1]  {\ensuremath{\boldsymbol{#1}}}
+\newcommand*{\OP}[1]  {\ensuremath{\mathrm{#1}}}
+\newcommand*{\NORM}[1]  {\ensuremath{\left\|#1\right\|}}
+\newcommand*{\DPR}[2]  {\ensuremath{\left \langle #1,#2 \right \rangle}}
+\newcommand*{\calbf}[1]  {\ensuremath{\boldsymbol{\mathcal{#1}}}}
+\newcommand*{\shift}[1]  {\ensuremath{\boldsymbol{#1}}}
+
+\newcommand{\eqdef}{\stackrel{\mathrm{def}}{=}}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\newcommand{\ud}{\, \mathrm{d}}
+\newcommand{\vect}{\text{Vect}}
+\newcommand{\sinc}{\ensuremath{\mathrm{sinc}}}
+\newcommand{\esp}{\ensuremath{\mathbb{E}}}
+\newcommand{\hilbert}{\ensuremath{\mathcal{H}}}
+\newcommand{\fourier}{\ensuremath{\mathcal{F}}}
+\newcommand{\sgn}{\text{sgn}}
+\newcommand{\intTT}{\int_{-T}^{T}}
+\newcommand{\intT}{\int_{-\frac{T}{2}}^{\frac{T}{2}}}
+\newcommand{\intinf}{\int_{-\infty}^{+\infty}}
+\newcommand{\Sh}{\ensuremath{\boldsymbol{S}}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\reel}{\mathcal{R}}
+\newcommand{\imag}{\mathcal{I}}
+\newcommand{\cmnr}{c_{m,n}^\reel}
+\newcommand{\cmni}{c_{m,n}^\imag}
+\newcommand{\cnr}{c_{n}^\reel}
+\newcommand{\cni}{c_{n}^\imag}
+\newcommand{\tproto}{g}
+\newcommand{\rproto}{\check{g}}
+\newcommand{\LR}{\mathcal{L}_2(\SET{R})}
+\newcommand{\LZ}{\ell_2(\SET{Z})}
+\newcommand{\LZI}[1]{\ell_2(\SET{#1})}
+\newcommand{\LZZ}{\ell_2(\SET{Z}^2)}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\noise}{z}
+\newcommand{\Noise}{Z}
+\newcommand{\filtnoise}{\zeta}
+\newcommand{\tp}{g}
+\newcommand{\rp}{\check{g}}
+\newcommand{\TP}{G}
+\newcommand{\RP}{\check{G}}
+\newcommand{\dmin}{d_{\mathrm{min}}}
+\newcommand{\Dmin}{D_{\mathrm{min}}}
+\newcommand{\Image}{\ensuremath{\text{Im}}}
+\newcommand{\Span}{\ensuremath{\text{Span}}}
+
+
+\theoremstyle{definition}
+\newtheorem{exemple}{Exemple}[section]
+\newtheorem{remarque}{Remarque}[section]
+
+\theoremstyle{plain}
+\newtheorem{theoreme}{Théorème}[section]
+\newtheorem{result}{Résultat}[section]
+\newtheorem{definition}{Définition}[section]
+\newtheorem{propriete}{Propriété}[section]
+\newtheorem{lemme}{Lemme}[section]
+\newtheorem{proposition}{Proposition}[section]
+
+\theoremstyle{remark}
+
+
+
+\parskip=5pt
+%\sloppy
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%
+%%% First page %%%
+%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+\begin{center}
+
+{\large Génie mathématique - 4ème année}\\[0.5cm]
+
+{\large Rapport de stage}\\[0.5cm]
+
+% Title
+\rule{\linewidth}{0.5mm} \\[0.4cm]
+{ \huge \bfseries Étude du comportement des méthodes BFGS et L-BFGS pour résoudre un sous-problème de région de confiance \\[0.4cm] }
+\rule{\linewidth}{0.5mm} \\[1.5cm]
+
+% Author and supervisor
+\noindent
+\begin{minipage}{0.4\textwidth}
+  \begin{flushleft} \large
+    \emph{Auteur :}\\
+    Johann \textsc{Bourhis}\\
+    % M. Prénom \textsc{Nom}\\
+    % M\up{me} Prénom \textsc{Nom}\\
+    % M. Prénom \textsc{Nom}
+  \end{flushleft}
+\end{minipage}%
+\begin{minipage}{0.4\textwidth}
+  \begin{flushright} \large
+    \emph{Encadrants :} \\
+    Jean-Pierre \textsc{Dussault}\\
+    \& Dominique \textsc{Orban}\\
+    %Dr.~Prénom \textsc{Nom}
+  \end{flushright}
+\end{minipage}
+
+\vspace{0.3cm}
+
+\includegraphics[width=0.8\textwidth]{logo}\\[1cm]
+
+\includegraphics[width=0.7\textwidth]{Polytechnique}\\[1cm]
+
+\vfill
+
+% Bottom of the page
+{\today}
+
+\end{center}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Non-significant pages %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%\section*{Remerciements}
+
+
+
+
+\clearpage
+\tableofcontents
+
+%\clearpage
+%\listoffigures
+
+\include{1-introduction}
+
+%\clearpage
+%\section*{Notations}
+
+%\\
+%\begin{itemize}
+%    \item[$\bullet$]    coucou
+%\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Content of the report and references %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\mainmatter
+
+\cleardoublepage
+\section{Étude de la méthode BFGS} 
+
+\subsection{Construction de la méthode et comportement sur une quadratique convexe}
+
+\subsection{Résultats de convergence et relations avec la méthode du gradient conjugué}
+
+\subsection{Comportement des deux méthodes dans le cas de problèmes non-convexes}
+
+\include{chap_3}
+
+\section{Implémentation de la méthode L-BFGS et comparaison avec les autres méthodes}
+
+\subsection{Une méthode quasi-Newton à mémoire limitée}
+
+\subsection{Comparaison avec les méthodes Quasi-Newton}
+
+\subsection{Comparaison avec la méthode du gradient conjugué}
+
+%\include{04-conclusion}
+
+%\appendix
+
+\clearpage
+
+\bibliographystyle{type_bib}
+\bibliography{references}
+\nocite{*}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%
+%%% Abstract %%%
+%%%%%%%%%%%%%%%%
+
+\thispagestyle{empty}
+
+\vspace*{\fill}
+\noindent\rule[2pt]{\textwidth}{0.5pt}\\
+{\textbf{Abstract ---}}
+
+
+{\textbf{Key words :}}
+
+
+\noindent\rule[2pt]{\textwidth}{0.5pt}
+\begin{center}
+  INSA Rennes\\
+  Génie Mathématique\\
+  Année 2018-2019\\
+\end{center}
+\vspace*{\fill}
+
+\end{document}

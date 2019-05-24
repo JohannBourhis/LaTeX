@@ -1,0 +1,138 @@
+\section{Utilisation de la méthode BFGS avec une contrainte de région de confiance}
+
+\subsection{Implémentation de l'algorithme de région de confiance}
+
+
+\begin{equation}\tag{SP1}\label{subprob1}
+    \min\limits_{\alpha \geq 0}f(x + \alpha d)
+\end{equation}
+
+\begin{equation}\tag{SP2}\label{subprob2}
+        \min\limits_{p \in \mathbb{R}^n} \{f(x + p) \text{ : } \|p\| \leq \Delta \}.
+\end{equation}
+
+\begin{equation}\tag{1}
+    \Omega(\Delta) := \{x \in \mathbb{R}^n \text{ tel que } \|x\| \leq \Delta\}
+\end{equation}
+
+\subsection{Construction d'une recherche linéaire avec contrainte de région de confiance}
+Dans cette sous-section, nous cherchons à adapter la méthode BFGS à une contrainte de région de confiance. L'objectif ici est d'appliquer la recherche linéaire avec la mise à jour de BFGS tant que l'on est à l'intérieur de l'ensemble $\Omega(\Delta)$ et de trouver une stratégie pour calculer un itéré $s_k$ dans le cas où l'on sortirait de cette région de confiance.
+
+%%%
+\begin{theoreme}
+    Soient $d_k = -H_k g_k$ la direction de descente définie par la méthode BFGS et $\alpha_k^* = \frac{-g_k^t d_k}{d_k^t A d_k}$ la longueur de pas optimale du sous problème (\ref{subprob1}). On définit
+\begin{equation}\tag{5}\label{vectors}
+    p_n = \sum_{k=1}^{n-1} s_k,
+\end{equation}
+\begin{center}
+    où $s_k = \alpha^*_k d_k$.
+\end{center}
+Alors la suite des itérés ${\|p_n\|}$ est croissante et la fonction $f$ décroît le long du chemin formé par les itérés $s_k$.
+\end{theoreme}
+
+\noindent
+\textit{Preuve.} D'après la propriété de conjugaison nous savons que
+\begin{equation}\tag{1}\label{ineq}
+    \|p_{n+1}\|_A^2 = \|p_n + s_n\|_A^2 = \|p_n\|_A^2 + \|s_n\|_A^2 > \|p_n\|_A^2.
+\end{equation}
+Soient $\{v_1, \text{ } v_2, \text{ }..., \text{ } v_n\}$ les vecteurs propres de $A$ associés respectivement aux valeurs propres $\{\lambda_1, \text{ } \lambda_2, \text{ }..., \text{ } \lambda_n\}$. Comme $A$ est inversible, nous pouvons écrire $p_n$ et $p_{n+1}$ comme étant des combinaisons linéaires des $\{v_k\}_{1 \leq k \leq n}$
+\begin{equation}\tag{2.a}
+    p_{n+1} = \sum_{i=1}^n \beta_i v_i,
+\end{equation}
+\vspace{-0.2cm}
+\begin{equation}\tag{2.b}
+    p_n = \sum_{i=1}^n \alpha_i v_i.
+\end{equation}
+Étant donné que les $\{v_k\}_{1 \leq k \leq n}$ forment une famille orthogonale, il en suit que
+\begin{equation}\tag{3.a}\label{orthogo}
+    \|p_{n+1}\|_A^2 = \sum_{i=1}^n \beta_i^2 \lambda_i^2 \|v_i\|^2,
+\end{equation}
+\vspace{-0.2cm}
+\begin{equation}\tag{3.b}
+    \|p_n\|_A^2 = \sum_{i=1}^n \alpha_i^2 \lambda_i^2 \|v_i\|^2.
+\end{equation}
+Ainsi (\ref{ineq}) implique que
+\begin{equation}\tag{4}
+    \|p_{n+1}\|^2 = \sum_{i=1}^n \beta_i^2 \|v_i\|^2 > \sum_{i=1}^n \alpha_i^2 \|v_i\|^2 = \|p_n\|^2.
+\end{equation}
+Nous avons par ailleurs l'inégalité suivante
+\begin{equation}\tag{5}
+    \|p_{n+1}\|^2 = \|p_n\|^2 + \|s_n\|^2 + 2p_n^t s_n > \|p_n\|^2 \iff \frac{-p_n^t s_n}{\|s_n\|^2} < \frac{1}{2}.
+\end{equation}
+
+Nous venons ainsi de montrer que la suite $\{\|p_n\|\}_{n \geq 1}$ est croissante et donc que les itérés $s_k$ s'éloignent à chaque étape du centre de la région de confiance $\Omega(\Delta)$. Il y a alors deux possiblités d'arrêt de l'algorithme en tenant compte de la contrainte de région de confiance. Soit $f(p_n)$ converge vers le minimum, dans le cas où celui-ci se trouve à l'intérieur de $\Omega(\Delta)$, soit $p_n$ sort de la région de confiance et il faut alors trouver le vecteur $p^*$ s'approchant au mieux de la solution avec contrainte.
+
+%%%%%%%%
+
+Pour un $k \in \mathbb{N}^*$ donné, posons la fonction $h\text{ : }\mathbb{R} \rightarrow \mathbb{R}$
+\begin{equation}\tag{1}
+    h(\alpha) = f(p_k + \alpha d_k) = \frac{1}{2}(p_k +\alpha d_k)^t A(p_k +\alpha d_k) + b^t(p_k +\alpha d_k)
+\end{equation}
+Il en suit que
+\begin{equation}\tag{2.a}
+    h'(\alpha) = d_k^t A(p_k +\alpha d_k) + b^t d_k
+\end{equation}
+\vspace{-0.5cm}
+\begin{equation}\tag{2.b}
+    h''(\alpha) = d_k^t A d_k.
+\end{equation}
+Etant donné que $A$ est SDP, $h"(\alpha) > 0$ et donc $h'(\alpha)$ est croissante. Nous savons donc que $h'(\alpha)$ est négative $\forall \alpha < \alpha^* := \frac{-\nabla f(p_k)^t d_k}{d_k^t A d_k}$.
+
+%%%
+\noindent
+Or il se trouve que $\alpha^*$ est le pas optimal du sous-problème (\ref{subprob1}). Ainsi, le chemin constitué des itérés $\{d_k\}_{k \in \mathbb{N}^*}$ est de la forme 
+\begin{equation}\tag{4}
+    \mathcal{C}(k, \alpha) = \alpha_{k-1}^*d_{k-1} + \alpha d_k, \text{ } k \in \mathbb{N}^*, \text{ } \alpha \in [0, \alpha_k^*],
+\end{equation}
+\begin{center}
+    avec $d_0 = 0$, $\alpha_0 = 0$.
+\end{center}
+
+Le résultat précédent nous indique donc que la fonction $f$ décroit le long du chemin $\mathcal{C}(k, \alpha)$. Nous pouvons ainsi choisir, s'il existe, le point au croisement entre $\mathcal{C}(k, \alpha)$ et $\Omega(\Delta)$ comme solution approchée du sous-problème (\ref{subprob2}). Nous sommes alors assurés d'avoir fait décroître au mieux $f$ dans la dernière direction $d_k$ donnée, tout en respectant la contrainte de région de confiance.
+
+%%%
+\noindent
+\begin{result}
+    Supposons donc que le minimum atteint par $f$ ne se situe pas dans la région de confiance $\Omega(\Delta)$. Nous reprenons la définition (\ref{vectors}) de $p_n$ et $s_n$. Soit $n$ le premier entier tel que $\|p_{n+1}\| > \Delta$. Nous savons d'après le précédent théorème qu'il existe $\tau^* \in \text{} ]0, 1[$ tel que 
+    \begin{equation}\tag{6} \label{norme_Delta}
+        \|p_n + \tau^* s_n \| = \Delta.
+    \end{equation}
+\end{result}
+Tout d'abord élevons la norme au carré. L'équation (\ref{norme_Delta}) se résoud alors en trouvant la racine positive de
+\begin{equation}\tag{7}
+    \tau^2 \|s_n\|^2 + 2 \tau p_n^t s_n + (\|p_n\|^2 - \Delta^2).
+\end{equation}
+Cette équation possède deux solutions réelles distinctes puisque $(\|p_n\|^2 - \Delta^2) < 0$ par hypothèse. En effet, suivant la direction donnée par $s_n$, il est possible d'atteindre la frontière de $\Omega(\Delta)$ dans le sens positif et dans le sens négatif.
+Les deux racines nous sont données par
+\begin{equation}\tag{8}
+    \tau_{1, 2} = \frac{-p_n^t s_{n} \pm \sqrt{(p_n^t s_{n})^2 + \|s_n\|^2(\Delta^2 - \|p_n\|^2)}}{\|s_n\|^2}.
+\end{equation}
+Il est clair que $\sqrt{(p_n^t s_{n})^2 + \|s_n\|^2(\Delta^2 - \|p_n\|^2)} > p_n^t s_{n}$. Il existe donc une unique racine positive qui nous est donnée par
+\begin{equation}\tag{9}
+    \tau^* = \frac{-p_n^t s_{n} + \sqrt{(p_n^t s_{n})^2 + \|s_n\|^2(\Delta^2 - \|p_n\|^2)}}{\|s_n\|^2}.
+\end{equation}
+Comme voulu, $\tau^* \in \text{ } ]0, 1[$. En effet, posons
+\begin{equation}\tag{10}
+    h(\tau) = \tau^2 \|s_n\|^2 + 2 \tau p_n^t s_n + \|p_n\|^2.
+\end{equation}
+Il en suit que
+\begin{equation}\tag{11.a}
+    h'(\tau) = 2\tau \|s_n\|^2 + 2p_n^ts_n,
+\end{equation}
+\vspace{-0.5cm}
+\begin{equation}\tag{11.b}
+    h''(\tau) = 2\|s_n\|^2.
+\end{equation}
+Comme $h''(\tau) > 0$, nous avons que $h'(\tau)$ est croissante et donc positive à partir de $\hat{\tau} = \frac{-p_n^ts_n}{\|s_n\|^2} \leq \frac{1}{2}$. Puisque $h(1) = \|p_n + s_n\|^2 > \Delta^2 = h(\tau^*)$, nous avons enfin la relation $\hat{\tau} < \tau^* < 1$.
+
+%%%
+\noindent
+Nous pouvons donc établir un protocole à suivre pour appliquer la méthode BFGS à un sous-problème de région de confiance. Tant que le minimum n'est pas atteint, nous choisissons $s_k$ et $p_{k+1}$ tels qu'indiqués par (\ref{vectors}). Si $\|p_{k+1}\| > \Delta$, nous remplaçons $p_{k+1}$ par $p_k + \tau^* s_k$ et arrêtons la recherche linéaire.
+
+\begin{remarque}
+    Rien ne nous assure ici que nous avons bien trouvé le minimum du sous problème (\ref{subprob2}). Mais cela n'a que très peu d'importance. En effet, nous cherchons en réalité à trouver la valeur minimale de $f$ suivant les directions $d_k$ données par la méthode BFGS. Puisque nous sommes assurés que $p_n$ s'éloigne du centre de $\Omega(\Delta)$, nous savons que nous nous sommes rapprochés de son minimum comme désiré.
+\end{remarque}
+
+
+%%%
+\subsection{Intérêt de la région de confiance dans le cas non-convexe}
